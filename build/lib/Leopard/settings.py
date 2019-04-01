@@ -62,28 +62,12 @@ ROBOTSTXT_OBEY = True
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 
-# 使用scrapy-redis里的去重组件，不使用scrapy默认的去重方式
-DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
-# 使用scrapy-redis里的调度器组件，不使用默认的调度器
-SCHEDULER = "scrapy_redis.scheduler.Scheduler"
-# 允许暂停，redis请求记录不丢失
-SCHEDULER_PERSIST = True
-# 默认的scrapy-redis请求队列形式（按优先级）
-SCHEDULER_QUEUE_CLASS = "scrapy_redis.queue.SpiderPriorityQueue"
-
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    # 'Leopard.pipelines.LeopardPipeline': 300,
    'Leopard.pipelines.MySQLPipeline': 300,
-   'scrapy_redis.pipelines.RedisPipeline': 400,
 }
-REDIS_URL = 'redis://root:xjgreat@127.0.0.1:6379'
-# # 指定数据库的主机IP
-# REDIS_HOST = "127.0.0.1"
-# # 指定数据库的端口号
-# REDIS_PORT = 6379
-
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html

@@ -18,10 +18,7 @@ class MySQLPipeline(object):
 
     def process_item(self, item, spider):
         sql = '''INSERT INTO `leo`.`leob` (`date`, `title`, `link`) VALUES ('%s', '%s', '%s');''' % (item['date'], item['title'], item['link'])
-        update_sql = '''SELECT * FROM `leob` WHERE `link` = '%s';''' % item['link']
-        try:
-            self.cur.execute(sql)
-        except:
-            self.cur.execute(update_sql)
+
+        self.cur.execute(sql)
         self.connect.commit()
         return item

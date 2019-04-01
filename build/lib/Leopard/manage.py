@@ -6,9 +6,8 @@ from scrapy.utils.project import get_project_settings
 def st():
     settings = get_project_settings()
     process = CrawlerProcess(settings)
-    for s in ['crawler', 'redisbaiduspider']:
-        if s == 'redisbaiduspider':
-            process.crawl(s)
+    for s in ['crawler', ]:
+        process.crawl(s)
     process.start()
 
 
