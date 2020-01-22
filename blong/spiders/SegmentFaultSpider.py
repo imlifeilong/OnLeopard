@@ -1,6 +1,6 @@
+from urllib.parse import unquote
 import scrapy
 import re
-import json
 
 
 class SegmentFaultSpider(scrapy.Spider):
@@ -194,6 +194,7 @@ class SegmentFaultSpider(scrapy.Spider):
             title = row.xpath('.//h2//a/text()').extract_first()
             link = row.xpath('.//h2//a/@href').extract_first()
             tag = re.findall('/t/(.*?)/blogs', response.url)[0]
+            tag = unquote(tag) if tag else None
             yield scrapy.Request(
                 url=self.base_url + link,
                 callback=self.parse_single,
