@@ -18,29 +18,38 @@ class BaseSpider(scrapy.Spider):
         self.crawler.stats.set_value('spider_name', self.name)
 
         for row in response.xpath(self.content_xpath):
-            link = row.xpath(self.link_xpath).extract_first()
+            link = self.parse_link(row)
             title = row.xpath(self.title_xpath).extract_first()
-            tag = row.xpath(self.tag_xpath).extract_first()
 
             yield scrapy.Request(
                 url=self.base_url + link,
                 callback=self.parse_single,
                 dont_filter=True,
-                meta={'data': {'title': title, 'link': self.base_url + link, 'tag': tag}},
+                meta={'data': {'title': title, 'link': link}},
             )
-            pass
 
-    # def request_single(self, url, callback, meta):
-    #     scrapy.Request(
-    #         url=self.base_url + link,
-    #         callback=self.parse_single,
-    #         dont_filter=True,
-    #         meta={'data': {'title': title, 'link': self.base_url + link, 'tag': tag}},
-    #     )
-
-    def parse_single(self, response):
-        pass
+    def parse_link(self, row):
+        href = row.xpath(self.link_xpath).extract_first()
+        if href.startswith('http'):
+            return href
+        else:
+            return self.base_url + href
 
     @staticmethod
-    def parse_tag(txt):
+    def parse_tag(tag):
+        pass
+
+    def parse_website(self):
+        return self.base_url
+
+    def parse_single_author(self, response):
+        pass
+
+    def parse_single_clicks(self, response):
+        pass
+
+    def parse_single_date(self, response):
+        pass
+
+    def parse_single_content(self, response):
         pass

@@ -64,8 +64,8 @@ NEWSPIDER_MODULE = 'blong.spiders'
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   # 'blong.pipelines.BlongPipeline': 300,
-   'blong.pipelines.MysqlPipeline': 1,
+    # 'blong.pipelines.BlongPipeline': 300,
+    'blong.pipelines.MysqlPipeline': 1,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
