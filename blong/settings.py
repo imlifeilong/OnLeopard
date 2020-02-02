@@ -8,7 +8,9 @@
 #     https://doc.scrapy.org/en/latest/topics/settings.html
 #     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+import os
 
+CONFIGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configs')
 BOT_NAME = 'blong'
 
 SPIDER_MODULES = ['blong.spiders']

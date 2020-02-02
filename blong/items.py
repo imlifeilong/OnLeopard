@@ -9,6 +9,26 @@ import scrapy
 
 
 class BlongItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    '''
+        title 标题
+        name 网址名
+        link 链接
+        author 作者
+        tag 标签
+        start_link 标签链接
+        reads 阅读量
+        posted 发布时间
+        content 内容
+        clicks 点赞数
+    '''
+
+    title = scrapy.Field()
+    name = scrapy.Field()
+    website = scrapy.Field()
+    author = scrapy.Field()
+    tag = scrapy.Field()
+    link = scrapy.Field()
+    reads = scrapy.Field()
+    posted = scrapy.Field()
+    content = scrapy.Field()
+    clicks = scrapy.Field()
