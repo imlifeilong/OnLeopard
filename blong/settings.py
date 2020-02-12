@@ -10,7 +10,8 @@
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 import os
 
-CONFIGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configs')
+BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+CONFIGS_DIR = os.path.join(BASE_DIR, 'configs')
 BOT_NAME = 'blong'
 
 SPIDER_MODULES = ['blong.spiders']
@@ -47,15 +48,17 @@ NEWSPIDER_MODULE = 'blong.spiders'
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
-# SPIDER_MIDDLEWARES = {
-#    'blong.middlewares.BlongSpiderMiddleware': 543,
-# }
+SPIDER_MIDDLEWARES = {
+    # 'blong.middlewares.BlongSpiderMiddleware': 543,
+
+}
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'blong.middlewares.BlongDownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    'blong.middlewares.BlongDownloaderMiddleware': 543,
+    # 'blong.middlewares.SeleniumMiddleware': 1,
+}
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
@@ -72,11 +75,11 @@ ITEM_PIPELINES = {
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
-AUTOTHROTTLE_ENABLED = True
-# The initial download delay
-AUTOTHROTTLE_START_DELAY = 1
-# The maximum download delay to be set in case of high latencies
-AUTOTHROTTLE_MAX_DELAY = 5
+# AUTOTHROTTLE_ENABLED = True
+# # The initial download delay
+# AUTOTHROTTLE_START_DELAY = 1
+# # The maximum download delay to be set in case of high latencies
+# AUTOTHROTTLE_MAX_DELAY = 5
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
 # AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
@@ -100,16 +103,16 @@ MYSQLCON = {
     # 'passwd': '123456',
     'database': 'blongs'
 }
-# 延时下载
-DOWNLOAD_DELAY = 0.01
-
-# 并发请求数
-CONCURRENT_REQUESTS = 4
-
-# 限制请求域名
-CONCURRENT_REQUESTS_PER_DOMAIN = 1
-
-# 限制爬取速度
-SPEED_SPIDER_BLOCKING_DELAY = 0.02
+# # 延时下载
+# DOWNLOAD_DELAY = 0.01
+#
+# # 并发请求数
+# CONCURRENT_REQUESTS = 4
+#
+# # 限制请求域名
+# CONCURRENT_REQUESTS_PER_DOMAIN = 1
+#
+# # 限制爬取速度
+# SPEED_SPIDER_BLOCKING_DELAY = 0.02
 
 LOG_LEVEL = 'INFO'

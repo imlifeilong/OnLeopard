@@ -1,7 +1,7 @@
 # 说明
-desc: '博客园'
+name: '博客园'
 # 名称
-name: CnblogSpider
+spider: CnblogSpider
 # 列表xpath
 list: '//div[@id="post_list"]//div[@class="post_item"]'
 # 网址
@@ -13,16 +13,17 @@ item:
   link: './/div[@class="post_item_body"]//h3/a/@href'
   # 作者
   author: './/div[@class="post_item_body"]//div[@class="post_item_foot"]//a/text()'
+  # 标签
+  label: '//div[@id="EntryTag"]//a/text()'
 
 # 下一页
 next: '//a[contains(text(), "Next")]//@href'
 
-
 start_urls:
   - tag: python
     start_link: 'https://www.cnblogs.com/cate/python/'
-  - tag: mysql
-    start_link: 'https://www.cnblogs.com/cate/mysql/'
+#  - tag: mysql
+#    start_link: 'https://www.cnblogs.com/cate/mysql/'
 
 single:
   # 阅读量
@@ -33,3 +34,6 @@ single:
   content: '//div[@id="cnblogs_post_body"]'
   # 点赞数
   clicks: '//span[@id="digg_count"]//text()'
+
+# 开启
+selenium_actions: True

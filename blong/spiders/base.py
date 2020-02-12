@@ -1,82 +1,91 @@
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+from selenium.webdriver import DesiredCapabilities
 import scrapy
+import platform
+import os
+from scrapy.utils.project import get_project_settings
+from scrapy import signals
 from blong.libs import parse_config
 from blong.libs import BlongItemLoader
 
-
-# class BaseSpider(scrapy.Spider):
-#     base_url = None
-#     content_xpath = None
-#     link_xpath = None
-#     title_xpath = None
-#     tag_xpath = None
-#
-#     items = ('title', 'link', 'tag', 'website', 'author', 'content', 'clicks', 'publish_date')
-#
-#     # def parse_xpath(self):
-#     #     for item in self.items:
-#     #         if hasattr(self, item + '_xpaht'):
-#
-#     def parse(self, response):
-#         self.crawler.stats.set_value('spider_name', self.name)
-#
-#         for row in response.xpath(self.content_xpath):
-#             link = self.parse_link(row)
-#             title = row.xpath(self.title_xpath).extract_first()
-#
-#             yield scrapy.Request(
-#                 url=self.base_url + link,
-#                 callback=self.parse_single,
-#                 dont_filter=True,
-#                 meta={'data': {'title': title, 'link': link}},
-#             )
-#
-#     def parse_link(self, row):
-#         href = row.xpath(self.link_xpath).extract_first()
-#         if href.startswith('http'):
-#             return href
-#         else:
-#             return self.base_url + href
-#
-#     @staticmethod
-#     def parse_tag(tag):
-#         pass
-#
-#     def parse_single(self, response):
-#         pass
-#
-#     def parse_website(self):
-#         return self.base_url
-#
-#     def parse_single_author(self, response):
-#         pass
-#
-#     def parse_single_clicks(self, response):
-#         pass
-#
-#     def parse_single_date(self, response):
-#         pass
-#
-#     def parse_single_content(self, response):
-#         pass
+settings = get_project_settings().copy()
 
 
 class BaseSpider(scrapy.Spider):
+    dirver = None
+    chromedriver = None
+
     def __init__(self, name=None):
         super().__init__(name)
         self.config = parse_config(self.name)
         print(self.config)
 
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = cls(*args, **kwargs)
+        spider._set_crawler(crawler)
+        crawler.signals.connect(spider.open_spider, signals.spider_opened)
+        crawler.signals.connect(spider.close_spider, signals.spider_closed)
+        return spider
+
+    def open_spider(self):
+        chrome_options = Options()
+        # 无头模式
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        # 不调用Java
+        chrome_options.add_argument('–disable-java')
+        # 拦截弹出
+        chrome_options.add_argument('–disable-popup-blocking')
+        # 不打开应用页
+        chrome_options.add_argument('--no-sandbox')
+        # 单进程
+        chrome_options.add_argument('–single-process')
+        # 无痕模式
+        chrome_options.add_argument('–incognito')
+
+        # 禁止图片和css加载
+        chrome_options.add_experimental_option("prefs", {
+            'profile.managed_default_content_settings.images': 2,
+            'profile.managed_default_content_settings.javascript': 2,
+            'permissions.default.stylesheet': 2
+        })
+
+        desired_capabilities = DesiredCapabilities.CHROME
+        desired_capabilities["pageLoadStrategy"] = "none"
+
+        if platform.system() == 'Linux':
+            self.chromedriver = os.path.join(settings['BASE_DIR'], 'tools/linux/chromedriver')
+        elif platform.system() == 'Windows':
+            self.chromedriver = os.path.join(settings['BASE_DIR'], 'tools\windows\chromedriver.exe')
+
+        self.driver = webdriver.Chrome(
+            executable_path=self.chromedriver,
+            options=chrome_options,
+            # service_args=service_args
+        )
+
+    def close_spider(self):
+        self.driver.close()
+        self.driver.quit()
+        self.driver = None
+        self.chromedriver = None
+
     def start_requests(self):
-        self.start_urls = self.config['start_urls']
+        self.start_urls = {item['start_link'] for item in self.config['start_urls']}
         if self.start_urls:
             for url in self.start_urls:
-                yield scrapy.Request(url=url['start_link'])
+                yield scrapy.Request(url=url)
 
     def parse(self, response):
         yield from self.parse_list(response)
-        _next = response.xpath(self.config['next'])
+        _next = response.xpath(self.config['next']).extract_first()
         if _next:
-            yield from self.parse_next(response)
+            if not _next.startswith('http'):
+                _next = self.config['website'] + _next
+
+            yield from self.parse_next(response, _next)
 
     def parse_list(self, response):
         for row in response.xpath(self.config['list']):
@@ -84,19 +93,34 @@ class BaseSpider(scrapy.Spider):
             for key, value in self.config['item'].items():
                 loader.add_xpath(key, value)
             item = loader.load_item()
-            #
-            # print(item)
+
             yield scrapy.Request(
                 url=item['link'],
                 callback=self.parse_single,
                 dont_filter=True,
-                meta={'data': loader}
+                meta={'item': item}
             )
+            break
 
     def parse_single(self, response):
-        print('single------------>', response)
+        loader = BlongItemLoader(response.meta['item'], response=response)
+
+        for key, value in self.config['single'].items():
+            if key.startswith('content'): continue
+            loader.add_xpath(key, value)
+        item = loader.load_item()
+
+        item['website'] = self.config['website']
+        item['name'] = self.config['name']
+        item['spider'] = self.config['spider']
+
+        print('--------->', item)
         yield
 
-    def parse_next(self, response):
-        print('next===============>', response)
-        yield
+    def parse_next(self, response, _next):
+        print('next===============>', response, _next)
+        yield scrapy.Request(
+            url=_next,
+            callback=self.parse,
+            meta=response.meta
+        )
