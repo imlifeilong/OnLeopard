@@ -70,25 +70,34 @@ class MysqlPipeline(object):
         self.cursor.close()
         self.client.close()
 
-
     def process_item(self, item, spider):
-
-        select_sql = '''SELECT * FROM pyblongs where link='%s';''' % item['link']
-        item['content'] = pymysql.escape_string(item['content'])
+        item['labels'] = '' if 'labels' not in item else item['labels']
+        select_sql = '''SELECT * FROM blongs where link='%s';''' % item['link']
+        # item['content'] = pymysql.escape_string(item['content'])
+        item['content'] = ''
+        item['author'] = pymysql.escape_string(item['author'])
+        item['title'] = pymysql.escape_string(item['title'])
         item['update_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cursor.execute(select_sql)
 
         # 当天发布
-        if not item['publish_date']:
-            item['publish_date'] = time.strftime("%Y-%m-%d", time.localtime())
+        if not item['posted']:
+            item['posted'] = time.strftime("%Y-%m-%d", time.localtime())
 
         if self.cursor.rowcount == 0:
             item['add_time'] = item['update_time']
-            insert_sql = '''INSERT INTO blongs.pyblongs VALUES ('{add_time}', '{update_time}', '{website}', '{author}', '{content}', '{link}', '{clicks}', '{publish_date}', '{title}', '{tag}');'''.format(**item)
+            # 入库文章
+            insert_sql = '''INSERT INTO blongs.blongs (`add_time`, `update_time`, `website`, `author`, 
+            `content`, `link`, `clicks`, `posted`, `title`, `tag`, `reads`, `labels`, `name`, `spider`) 
+            VALUES ('{add_time}', '{update_time}', '{website}', '{author}', '{content}', '{link}', 
+            {clicks}, '{posted}', '{title}', '{tag}', {reads}, '{labels}', '{name}', '{spider}');'''.format(**item)
+
             self.cursor.execute(insert_sql)
 
         else:
-            update_sql = '''UPDATE blongs.pyblongs SET update_time='{update_time}', content='{content}', clicks='{clicks}', publish_date='{publish_date}', tag='{tag}' WHERE (link='{link}');'''.format(**item)
+            update_sql = '''UPDATE blongs.blongs SET `update_time`='{update_time}', `content`='{content}', `clicks`={clicks}, `reads`={reads} WHERE `link`='{link}';'''.format(
+                **item)
+            # print(update_sql)
             self.cursor.execute(update_sql)
         # 提交
         self.client.commit()

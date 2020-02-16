@@ -21,14 +21,17 @@ class BlongItem(scrapy.Item):
         content 内容
         clicks 点赞数
     '''
-
+    add_time = scrapy.Field()
+    update_time = scrapy.Field()
     title = scrapy.Field()
     name = scrapy.Field()
+    spider = scrapy.Field()
     website = scrapy.Field()
     author = scrapy.Field()
     tag = scrapy.Field()
     link = scrapy.Field()
-    reads = scrapy.Field()
+    reads = scrapy.Field(serializer=int)
     posted = scrapy.Field()
     content = scrapy.Field()
-    clicks = scrapy.Field()
+    clicks = scrapy.Field(serializer=int)
+    labels = scrapy.Field()

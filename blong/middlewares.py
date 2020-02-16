@@ -79,9 +79,7 @@ class BlongDownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        # print(spider.)
         if spider.config['selenium_actions']:
-            print(request.url)
             spider.driver.get(request.url)
             html = spider.driver.page_source
 

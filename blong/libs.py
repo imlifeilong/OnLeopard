@@ -1,6 +1,6 @@
 from scrapy.utils.project import get_project_settings
 from scrapy.loader import ItemLoader
-from scrapy.loader.processors import TakeFirst, MapCompose, Identity
+from scrapy.loader.processors import TakeFirst, MapCompose, Join
 import yaml
 import os
 
@@ -9,6 +9,8 @@ from blong.items import BlongItem
 
 class BlongItemLoader(ItemLoader):
     default_output_processor = TakeFirst()
+    content_out = Join()
+    labels_out = Join(separator='#|#')
 
     def __init__(self, item=None, selector=None, response=None, parent=None, **context):
         item = item or BlongItem()

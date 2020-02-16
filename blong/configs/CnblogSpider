@@ -13,8 +13,7 @@ item:
   link: './/div[@class="post_item_body"]//h3/a/@href'
   # 作者
   author: './/div[@class="post_item_body"]//div[@class="post_item_foot"]//a/text()'
-  # 标签
-  label: '//div[@id="EntryTag"]//a/text()'
+
 
 # 下一页
 next: '//a[contains(text(), "Next")]//@href'
@@ -31,9 +30,11 @@ single:
   # 发布时间
   posted: '//span[@id="post-date"]//text()'
   # 内容
-  content: '//div[@id="cnblogs_post_body"]'
+  content: '//div[@id="cnblogs_post_body"]//text()'
   # 点赞数
   clicks: '//span[@id="digg_count"]//text()'
+  # 标签
+  labels: '//div[@id="blog_post_info_block"]//div[@id="EntryTag"]//a//text()'
 
 # 开启
 selenium_actions: True

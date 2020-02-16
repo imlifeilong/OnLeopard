@@ -48,7 +48,7 @@ class BaseSpider(scrapy.Spider):
         # 禁止图片和css加载
         chrome_options.add_experimental_option("prefs", {
             'profile.managed_default_content_settings.images': 2,
-            'profile.managed_default_content_settings.javascript': 2,
+            # 'profile.managed_default_content_settings.javascript': 2,
             'permissions.default.stylesheet': 2
         })
 
@@ -73,10 +73,10 @@ class BaseSpider(scrapy.Spider):
         self.chromedriver = None
 
     def start_requests(self):
-        self.start_urls = {item['start_link'] for item in self.config['start_urls']}
+        self.start_urls = {item['tag']: item['start_link'] for item in self.config['start_urls']}
         if self.start_urls:
-            for url in self.start_urls:
-                yield scrapy.Request(url=url)
+            for url in self.start_urls.items():
+                yield scrapy.Request(url=url[1], meta={'tag': url[0]})
 
     def parse(self, response):
         yield from self.parse_list(response)
@@ -93,20 +93,23 @@ class BaseSpider(scrapy.Spider):
             for key, value in self.config['item'].items():
                 loader.add_xpath(key, value)
             item = loader.load_item()
-
+            item['tag'] = response.meta['tag']
             yield scrapy.Request(
                 url=item['link'],
+                # url='https://www.cnblogs.com/xiaoyangjia/p/11535486.html',
                 callback=self.parse_single,
                 dont_filter=True,
                 meta={'item': item}
             )
-            break
 
     def parse_single(self, response):
+        # print(response.meta['item'])
         loader = BlongItemLoader(response.meta['item'], response=response)
+        # labels = response.xpath('//div[@id="blog_post_info_block"]//div[@id="EntryTag"]')
+        # print(labels)
 
         for key, value in self.config['single'].items():
-            if key.startswith('content'): continue
+            # if key.startswith('content'): continue
             loader.add_xpath(key, value)
         item = loader.load_item()
 
@@ -114,11 +117,11 @@ class BaseSpider(scrapy.Spider):
         item['name'] = self.config['name']
         item['spider'] = self.config['spider']
 
-        print('--------->', item)
-        yield
+        print('--------->', item['title'])
+        yield item
 
     def parse_next(self, response, _next):
-        print('next===============>', response, _next)
+        # print('next===============>', response, _next)
         yield scrapy.Request(
             url=_next,
             callback=self.parse,

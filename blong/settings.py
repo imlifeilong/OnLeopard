@@ -95,12 +95,12 @@ ITEM_PIPELINES = {
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 MYSQLCON = {
-    # 'host': '127.0.0.1',
-    'host': '182.61.59.69',
+    'host': '127.0.0.1',
+    # 'host': '182.61.59.69',
     'port': 3306,
     'user': 'root',
-    'passwd': 'lifeilong1qaz!',
-    # 'passwd': '123456',
+    # 'passwd': 'lifeilong1qaz!',
+    'passwd': '123456',
     'database': 'blongs'
 }
 # # 延时下载
