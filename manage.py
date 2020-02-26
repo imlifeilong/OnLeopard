@@ -5,8 +5,8 @@ from scrapy.utils.project import get_project_settings
 from blong.spiders.base import BaseSpider
 
 spider_list = [
-    # 'SegmentFaultSpider',
-    'CnblogSpider',
+    'SegmentFaultSpider',
+    # 'CnblogSpider',
 ]
 
 settings = get_project_settings().copy()

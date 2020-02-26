@@ -232,7 +232,7 @@ class SegmentFaultSpider(scrapy.Spider):
         # res['content'] = json.dumps({'text': content})
         res['content'] = content
         res['clicks'] = int(clicks)
-        res['publish_date'] = date
+        res['posted'] = date
         res.update(response.meta['data'])
 
         yield res

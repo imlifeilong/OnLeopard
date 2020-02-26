@@ -1,0 +1,40 @@
+# 说明
+name: '思否'
+# 名称
+spider: SegmentFaultSpider
+# 列表xpath
+list: '//div[@id="blog"]//section//div[@class="summary"]'
+# 网址
+website: 'https://segmentfault.com/'
+item:
+  # 标题
+  title: './/h2//a/text()'
+  # 链接
+  link: './/h2//a/@href'
+  # 作者
+  author: './/ul//li//span//a//text()'
+
+
+# 下一页
+next: '//a[contains(text(), "下一页")]/@href'
+
+start_urls:
+  - tag: python
+    start_link: 'https://segmentfault.com/t/python/blogs'
+#  - tag: mysql
+#    start_link: 'https://www.cnblogs.com/cate/mysql/'
+
+single:
+  # 阅读量
+  reads: 'substring-after(substring-after(//div[@id="sf-article_metas"]//text(), "阅读"), "发布于")'
+  # 发布时间
+  posted: 'substring-after(//div[@id="sf-article_metas"]//text(), "发布于")'
+  # 内容
+  content: '//article'
+  # 点赞数
+  clicks: '//span[@id="digg_count"]//text()'
+  # 标签
+  labels: '//div[@id="sf-article_tags"]//div//a//text()'
+
+# 开启
+selenium_actions: True

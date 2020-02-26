@@ -94,8 +94,13 @@ class BaseSpider(scrapy.Spider):
                 loader.add_xpath(key, value)
             item = loader.load_item()
             item['tag'] = response.meta['tag']
+            link = item['link']
+            if not link.startswith('http'):
+                link = self.config['website'] + link
+            item['link'] = link
+
             yield scrapy.Request(
-                url=item['link'],
+                url=link,
                 # url='https://www.cnblogs.com/xiaoyangjia/p/11535486.html',
                 callback=self.parse_single,
                 dont_filter=True,
